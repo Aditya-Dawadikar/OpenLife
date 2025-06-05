@@ -1,0 +1,50 @@
+# Build artifacts
+/build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# Executables
+*.out
+*.exe
+*.app
+openlife
+
+# Object files
+*.o
+*.obj
+*.lo
+
+# CUDA binary intermediates
+*.ptx
+*.cubin
+*.fatbin
+*.linkinfo
+
+# ImGui binaries
+*.dll
+*.lib
+*.pdb
+
+# SDL2 artifacts
+*.log
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.code-workspace
+
+# OS-specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backup / temp
+*~
+*.swp
+*.bak
+
+# User configs
+.env
