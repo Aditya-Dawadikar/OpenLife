@@ -10,6 +10,8 @@ public:
     void clear();
     void drawParticles(const Particle* particles, int count);
     void present();
+    SDL_Renderer* getSDLRenderer() const;
+    SDL_Window* getWindow() const;
 
 private:
     SDL_Window* window;
@@ -17,4 +19,5 @@ private:
     int screenWidth, screenHeight;
 
     SDL_Color getColor(int type);
+
 };

@@ -72,14 +72,28 @@ __global__ void launch_simulation_kernel(Particle* particles,
     }
 
     // Bounce off top/bottom
-    if (p.y < 0.0f) {
-        p.y = 0.0f;
-        p.vy *= -1.0f;
+    // if (p.y < 0.0f) {
+    //     p.y = 0.0f;
+    //     p.vy *= -1.0f;
+    // }
+    // if (p.y > screenHeight - 1) {
+    //     p.y = screenHeight - 1;
+    //     p.vy *= -1.0f;
+    // }
+
+    // Define canvas bounds (hardcoded or passed in — here we hardcode)
+    float canvasLeft = 325.0f;
+    float canvasRight = canvasLeft + 600;  // screenWidth = 800
+
+    if (p.x < canvasLeft) {
+        p.x = canvasLeft;
+        p.vx *= -1.0f;
     }
-    if (p.y > screenHeight - 1) {
-        p.y = screenHeight - 1;
-        p.vy *= -1.0f;
+    if (p.x > canvasRight - 1.0f) {
+        p.x = canvasRight - 1.0f;
+        p.vx *= -1.0f;
     }
+
 
     particles[i] = p;
 }
@@ -123,4 +137,13 @@ void runSimulationStep(float dt, int screenWidth, int screenHeight) {
 void cleanupSimulation() {
     cudaFree(d_particles);
     cudaFree(d_forceMatrix);
+}
+
+
+void updateForceMatrix(float* hostForceMatrix) {
+    cudaMemcpy(d_forceMatrix, hostForceMatrix, typeCount * typeCount * sizeof(float), cudaMemcpyHostToDevice);
+}
+
+void updateInfluenceRadiusMatrix(float* hostRadiusMatrix) {
+    cudaMemcpy(d_influenceRadiusMatrix, hostRadiusMatrix, typeCount * typeCount * sizeof(float), cudaMemcpyHostToDevice);
 }

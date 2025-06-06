@@ -8,12 +8,20 @@ Renderer::Renderer(int width, int height)
         throw std::runtime_error("SDL could not initialize");
     }
 
+    // window = SDL_CreateWindow("OpenLife Simulation",
+    //                           SDL_WINDOWPOS_CENTERED,
+    //                           SDL_WINDOWPOS_CENTERED,
+    //                           screenWidth,
+    //                           screenHeight,
+    //                           SDL_WINDOW_SHOWN);
+
     window = SDL_CreateWindow("OpenLife Simulation",
-                              SDL_WINDOWPOS_CENTERED,
-                              SDL_WINDOWPOS_CENTERED,
-                              screenWidth,
-                              screenHeight,
-                              SDL_WINDOW_SHOWN);
+                          SDL_WINDOWPOS_CENTERED,
+                          SDL_WINDOWPOS_CENTERED,
+                          screenWidth,  // add space for UI
+                          screenHeight,
+                          SDL_WINDOW_SHOWN);
+
 
     if (!window) {
         throw std::runtime_error("SDL window could not be created");
@@ -56,15 +64,30 @@ SDL_Color Renderer::getColor(int type) {
 void Renderer::drawParticles(const Particle* particles, int count) {
     for (int i = 0; i < count; ++i) {
         const Particle& p = particles[i];
-        SDL_Color color = getColor(p.type);
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+        // SDL_Color color = getColor(p.type);
+        // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
 
-        SDL_Rect pixel = {
-            static_cast<int>(p.x),
-            static_cast<int>(p.y),
-            2, 2
-        };
+        // SDL_Rect pixel = {
+        //     static_cast<int>(p.x),
+        //     static_cast<int>(p.y),
+        //     2, 2
+        // };
 
-        SDL_RenderFillRect(renderer, &pixel);
+        // SDL_RenderFillRect(renderer, &pixel);
+        if (p.x >= 300 && p.x < screenWidth + 300 && p.y >= 0 && p.y < screenHeight) {
+            SDL_Color color = getColor(p.type);
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+
+            SDL_Rect pixel = {
+                static_cast<int>(p.x),
+                static_cast<int>(p.y),
+                2, 2
+            };
+
+            SDL_RenderFillRect(renderer, &pixel);
+        }
     }
 }
+
+SDL_Renderer* Renderer::getSDLRenderer() const { return renderer; }
+SDL_Window* Renderer::getWindow() const { return window; }
