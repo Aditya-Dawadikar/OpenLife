@@ -1,7 +1,9 @@
 #pragma once
 #include <imgui.h>
 
-const int NUM_TYPES = 3;
+// const int NUM_TYPES = 2;
+// const int NUM_TYPES = 3;
+const int NUM_TYPES = 6;
 
 extern float forceMatrix[NUM_TYPES * NUM_TYPES];
 extern float influenceRadiusMatrix[NUM_TYPES * NUM_TYPES];

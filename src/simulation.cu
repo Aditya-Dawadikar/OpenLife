@@ -61,26 +61,6 @@ __global__ void launch_simulation_kernel(Particle* particles,
     p.x += p.vx * dt;
     p.y += p.vy * dt;
 
-    // Bounce off left/right
-    if (p.x < 0.0f) {
-        p.x = 0.0f;
-        p.vx *= -1.0f;
-    }
-    if (p.x > screenWidth - 1) {
-        p.x = screenWidth - 1;
-        p.vx *= -1.0f;
-    }
-
-    // Bounce off top/bottom
-    // if (p.y < 0.0f) {
-    //     p.y = 0.0f;
-    //     p.vy *= -1.0f;
-    // }
-    // if (p.y > screenHeight - 1) {
-    //     p.y = screenHeight - 1;
-    //     p.vy *= -1.0f;
-    // }
-
     // Define canvas bounds (hardcoded or passed in — here we hardcode)
     float canvasLeft = 325.0f;
     float canvasRight = canvasLeft + 600;  // screenWidth = 800
@@ -92,6 +72,14 @@ __global__ void launch_simulation_kernel(Particle* particles,
     if (p.x > canvasRight - 1.0f) {
         p.x = canvasRight - 1.0f;
         p.vx *= -1.0f;
+    }
+    if (p.y < 0.0f) {
+        p.y = 0.0f;
+        p.vy *= -1.0f;
+    }
+    if (p.y > screenHeight - 1.0f) {
+        p.y = screenHeight - 1.0f;
+        p.vy *= -1.0f;
     }
 
 

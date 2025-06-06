@@ -64,14 +64,6 @@ SDL_Color Renderer::getColor(int type) {
 void Renderer::drawParticles(const Particle* particles, int count) {
     for (int i = 0; i < count; ++i) {
         const Particle& p = particles[i];
-        // SDL_Color color = getColor(p.type);
-        // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
-
-        // SDL_Rect pixel = {
-        //     static_cast<int>(p.x),
-        //     static_cast<int>(p.y),
-        //     2, 2
-        // };
 
         // SDL_RenderFillRect(renderer, &pixel);
         if (p.x >= 300 && p.x < screenWidth + 300 && p.y >= 0 && p.y < screenHeight) {
