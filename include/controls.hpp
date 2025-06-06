@@ -1,0 +1,15 @@
+#pragma once
+#include <imgui.h>
+
+const int NUM_TYPES = 3;
+
+extern float forceMatrix[NUM_TYPES * NUM_TYPES];
+extern float influenceRadiusMatrix[NUM_TYPES * NUM_TYPES];
+extern float particleDensity[NUM_TYPES];
+
+extern bool simulationStarted;
+extern bool simulationPaused;
+extern bool simulationResetRequested;
+extern int particleCountSetting;
+
+void renderControlUI();

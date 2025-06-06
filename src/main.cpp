@@ -5,11 +5,12 @@
 #include "renderer.hpp"
 #include "simulation.hpp"
 #include "particle.hpp"
+#include "controls.hpp"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdlrenderer2.h"
 
-const int WIDTH = 800;
+const int WIDTH = 1200;
 const int HEIGHT = 600;
-const int NUM_PARTICLES = 3000;
-const int NUM_TYPES = 3;
 const float DT = 0.1f;
 
 int main(int argc, char* argv[]) {
@@ -18,75 +19,94 @@ int main(int argc, char* argv[]) {
     // Init Renderer
     Renderer renderer(WIDTH, HEIGHT);
 
-    // Define Force Matrix (row-major: from_type * NUM_TYPES + to_type)
-    float forceMatrix[NUM_TYPES * NUM_TYPES] = {
-        2.0f,  1.5f,  0.0f,    // Red nucleus
-        1.5f, -2.0f, -1.2f,    // Green membrane
-        -0.3f, -0.6f, -0.1f    // Blue environment
-    };
+    // Setup ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
 
-    float influenceRadiusMatrix[NUM_TYPES*NUM_TYPES] = {
-        60.0f, 40.0f, 90.0f,   // Red: tight interaction
-        40.0f, 80.0f, 40.0f,   // Green: thinner membrane
-        90.0f, 40.0f, 60.0f    // Blue: not very influential
-    };
+    ImGui_ImplSDL2_InitForSDLRenderer(renderer.getWindow(), renderer.getSDLRenderer());
+    ImGui_ImplSDLRenderer2_Init(renderer.getSDLRenderer());
 
-    float particleDensity[NUM_TYPES] = {0.3f, 0.2f, 0.5f};
-
-    // Create Particles
     std::vector<Particle> particles;
-    for (int type = 0; type < NUM_TYPES; ++type) {
-        int count = static_cast<int>(particleDensity[type]*NUM_PARTICLES);
-        for (int i = 0; i < count; ++i) {
-            Particle p;
-            p.x = static_cast<float>(rand() % WIDTH);
-            p.y = static_cast<float>(rand() % HEIGHT);
-            p.vx = 0.0f;
-            p.vy = 0.0f;
-            p.type = type;
-            particles.push_back(p);
-        }
-    }
-
-    // Setup Simulation
-    initializeSimulation(particles.size(),
-                            NUM_TYPES,
-                            forceMatrix,
-                            influenceRadiusMatrix);
-    uploadParticles(particles.data(), particles.size());
+    bool simulationInitialized = false;
 
     // Main Loop
     bool running = true;
     SDL_Event event;
 
-    bool paused = false;
-
     while (running) {
-        // Handle events
+        // Handle Reset
+        if (simulationResetRequested) {
+            cleanupSimulation();
+            particles.clear();
+            simulationInitialized = false;
+            simulationResetRequested = false;
+        }
+
+        // Handle Events
         while (SDL_PollEvent(&event)) {
+            ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
                 running = false;
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_SPACE) {
-                    paused = !paused;
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE)
+                simulationPaused = !simulationPaused;
+        }
+
+        // Start ImGui Frame
+        ImGui_ImplSDL2_NewFrame();
+        ImGui_ImplSDLRenderer2_NewFrame();
+        ImGui::NewFrame();
+
+        // UI panel
+        renderControlUI();
+
+        // Initialize Simulation (only once after "Start")
+        if (simulationStarted && !simulationInitialized) {
+            particles.clear();
+            for (int type = 0; type < NUM_TYPES; ++type) {
+                int count = static_cast<int>(particleDensity[type] * particleCountSetting);
+                for (int i = 0; i < count; ++i) {
+                    Particle p;
+                    p.x = 325 + static_cast<float>(rand() % 600);  // Right-shift to leave space for UI
+                    p.y = static_cast<float>(rand() % 600);
+                    p.vx = 0.0f;
+                    p.vy = 0.0f;
+                    p.type = type;
+                    particles.push_back(p);
                 }
             }
+
+            initializeSimulation(particles.size(), NUM_TYPES, forceMatrix, influenceRadiusMatrix);
+            uploadParticles(particles.data(), particles.size());
+            simulationInitialized = true;
         }
 
-        if (!paused) {
-            // Step simulation
+        // Step Simulation if running
+        if (simulationStarted && simulationInitialized && !simulationPaused) {
+            updateForceMatrix(forceMatrix);
+            updateInfluenceRadiusMatrix(influenceRadiusMatrix);
+
             runSimulationStep(DT, WIDTH, HEIGHT);
             downloadParticles(particles.data(), particles.size());
-
-            // Render
-            renderer.clear();
-            renderer.drawParticles(particles.data(), particles.size());
-            renderer.present();
         }
+
+        // Render
+        renderer.clear();
+        if (simulationInitialized)
+            renderer.drawParticles(particles.data(), particles.size());
+
+        ImGui::Render();
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer.getSDLRenderer());
+        renderer.present();
 
         SDL_Delay(16); // ~60 FPS
     }
 
+    // Cleanup
     cleanupSimulation();
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     return 0;
 }

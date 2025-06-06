@@ -38,3 +38,9 @@ void uploadParticles(const Particle* hostParticles, int count);
  * @param count Number of particles to download
  */
 void downloadParticles(Particle* hostParticles, int count);
+
+// Update device-side force matrix
+void updateForceMatrix(float* hostForceMatrix);
+
+// Update device-side influence radius matrix
+void updateInfluenceRadiusMatrix(float* hostRadiusMatrix);
