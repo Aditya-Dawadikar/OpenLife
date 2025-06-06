@@ -9,7 +9,7 @@
  * @param numTypes Number of particle types (colors/species)
  * @param hostForceMatrix Flattened [numTypes * numTypes] force matrix (row-major)
  */
-void initializeSimulation(int numParticles, int numTypes, float* hostForceMatrix, float* influenceRadiusMatrix);
+void initializeSimulation(int numParticles, int numTypes, float* hostForceMatrix, float* influenceRadiusMatrix, float* repulsionRadiusMatrix);
 
 /**
  * Performs one simulation step on the GPU.
@@ -44,3 +44,6 @@ void updateForceMatrix(float* hostForceMatrix);
 
 // Update device-side influence radius matrix
 void updateInfluenceRadiusMatrix(float* hostRadiusMatrix);
+
+// Update device-side repulsion radius matrix
+void updateRepulsionRadiusMatrix(float* hostRadiusMatrix);

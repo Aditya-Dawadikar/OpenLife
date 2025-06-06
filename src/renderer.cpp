@@ -51,13 +51,17 @@ void Renderer::present() {
 SDL_Color Renderer::getColor(int type) {
     // Define color per type (can expand if more types added)
     switch (type) {
-        case 0: return {255, 0, 0};    // Red
-        case 1: return {0, 255, 0};    // Green
-        case 2: return {0, 0, 255};    // Blue
-        case 3: return {255, 255, 0};  // Yellow
-        case 4: return {255, 0, 255};  // Magenta
-        case 5: return {0, 255, 255};  // Cyan
-        default: return {255, 255, 255}; // White fallback
+        case 0: return {255, 0, 0};       // Red
+        case 1: return {0, 255, 0};       // Green
+        case 2: return {0, 0, 255};       // Blue
+        case 3: return {255, 255, 0};     // Yellow
+        case 4: return {255, 0, 255};     // Magenta
+        case 5: return {0, 255, 255};     // Cyan
+        case 6: return {255, 165, 0};     // Orange
+        case 7: return {255, 255, 255};   // White
+        case 8: return {255, 105, 180};   // Pink
+        case 9: return {139, 69, 19};     // Brown
+        default: return {200, 200, 200};  // Light gray fallback
     }
 }
 

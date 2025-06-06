@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
                 }
             }
 
-            initializeSimulation(particles.size(), NUM_TYPES, forceMatrix, influenceRadiusMatrix);
+            initializeSimulation(particles.size(), NUM_TYPES, forceMatrix, influenceRadiusMatrix, repulsionRadiusMatrix);
             uploadParticles(particles.data(), particles.size());
             simulationInitialized = true;
         }
@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
         if (simulationStarted && simulationInitialized && !simulationPaused) {
             updateForceMatrix(forceMatrix);
             updateInfluenceRadiusMatrix(influenceRadiusMatrix);
+            updateRepulsionRadiusMatrix(repulsionRadiusMatrix);
 
             runSimulationStep(DT, WIDTH, HEIGHT);
             downloadParticles(particles.data(), particles.size());
